@@ -1,0 +1,2 @@
+_installed
+successfully installed the Python CGI

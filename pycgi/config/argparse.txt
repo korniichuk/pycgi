@@ -1,0 +1,6 @@
+_parser
+The Python CGI administration utility
+_subparsers
+subcommands
+_parser_install
+install the Python CGI
