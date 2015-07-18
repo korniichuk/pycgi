@@ -1,2 +1,6 @@
+_error_NoRoot
+Error: To do that you need a superuser (root) privileges.
+_error_Oops
+Error: %s.
 _installed
 successfully installed the Python CGI
