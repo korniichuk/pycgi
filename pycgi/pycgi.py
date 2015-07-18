@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from argparse import ArgumentParser
+from errno import EACCES
+from os import remove
 from os.path import dirname, exists, isfile, join
+from subprocess import check_output, CalledProcessError
 from sys import argv, exit
 
 from configobj import ConfigObj
@@ -53,7 +56,48 @@ def install():
         pip_path = join(downloads_path, "get-pip.py")
         if exists(pip_path) and isfile(pip_path):
             remove(pip_path)
-    pass # TODO
+    # Installing Apache 2
+    local("echo \"Y\" | sudo apt-get install apache2")
+    # Disable multithreading processes
+    local("sudo a2dismod mpm_event")
+    # Give Apache explicit permission to run scripts
+    local("sudo a2enmod mpm_prefork cgi")
+    # Configuration
+    config_file_abs_path = "/etc/apache2/sites-enabled/000-default.conf"
+    if exists(config_file_abs_path) and isfile(config_file_abs_path):
+        try:
+            with open(config_file_abs_path, 'r') as f:
+                config_file_lines = f.readlines()
+        except Exception as exception: # Python3 PermissionError
+            error_code = exception.errno
+            if error_code == EACCES: # 13
+                print(messages["_error_NoRoot"])
+                exit(1)
+            else:
+                print(messages["_error_Oops"] % strerror(error_code))
+                exit(1)
+    try:
+        with open(config_file_abs_path, 'w') as f:
+            for line in config_file_lines:
+                f.write(line)
+                line_strip = line.strip()
+                if line_strip == "<VirtualHost *:80>":
+                    f.write("\t<Directory /var/www/html>\n")
+                    f.write("\t\tOptions +ExecCGI\n")
+                    f.write("\t\tDirectoryIndex index.html\n")
+                    f.write("\t</Directory>\n")
+                    f.write("\tAddHandler cgi-script .py\n")
+    except Exception as exception: # Python3 PermissionError
+        error_code = exception.errno
+        if error_code == EACCES: # 13
+            print(messages["_error_NoRoot"])
+            exit(1)
+        else:
+            print(messages["_error_Oops"] % strerror(error_code))
+            exit(1)
+    # Restart Apache
+    local("sudo service apache2 restart")
+    # Output
     print(messages["_installed"])
 
 def main():
@@ -77,7 +121,7 @@ def parse_command_line_args():
     parser_install = subparsers.add_parser("install",
             description=argparse["_parser_install"],
             help=argparse["_parser_install"])
-    parser_install.set_defaults(function_name=install)    
+    parser_install.set_defaults(function_name=install)
     if len(argv) == 1:
         parser.print_help()
         exit(0) # Clean exit without any errors/problems
