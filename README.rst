@@ -1,6 +1,10 @@
 .. contents:: Table of contents
    :depth: 2
 
+Portability
+===========
+The Python CGI administration utility tested on Ubuntu 14.04.2 LTS and Ubuntu 15.04.
+
 Installation
 ============
 Install the pycgi from PyPI
@@ -72,3 +76,9 @@ The standard output for –version::
 or::
 
     $ pycgi --version
+
+Install the Python CGI
+----------------------
+::
+
+    $ pycgi install
