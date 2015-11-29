@@ -3,7 +3,7 @@
 
 Portability
 ===========
-The Python CGI administration utility tested on Ubuntu 14.04.2 LTS and Ubuntu 15.04.
+The Python CGI administration utility tested on **Ubuntu Desktop 14.04 LTS** and **Ubuntu Desktop 15.04**.
 
 Installation
 ============
