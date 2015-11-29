@@ -39,6 +39,6 @@ setup(
     packages = ["pycgi"],
     platforms = ["Linux"],
     url = "https://github.com/korniichuk/pycgi",
-    version = "0.1a2",
+    version = "0.1a3",
     zip_safe = True
 )
